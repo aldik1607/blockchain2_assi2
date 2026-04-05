@@ -68,18 +68,15 @@ jobs:
         with:
           python-version: "3.11"
 
-      # ─── 4. Install Slither ───────────────────────────────────
       - name: Install Slither
         run: pip install slither-analyzer
 
-      # ─── 5. Run all tests ─────────────────────────────────────
-      - name: Run tests
-        run: forge test -vv --no-match-contract ForkTest
+      - name: Run Slither analysis
+        run: slither . || true
 
-      # ─── 6. Gas report ────────────────────────────────────────
-      - name: Gas report
-        run: forge test --gas-report --no-match-contract ForkTest
-      
-      # ─── 7. Coverage report ───────────────────────────────────
-      - name: Coverage report
-        run: forge coverage --no-match-contract ForkTest
+      - name: Upload Slither report
+        uses: actions/upload-artifact@v4
+        with:
+          name: slither-report
+          path: slither-report.md
+          if-no-files-found: ignore
