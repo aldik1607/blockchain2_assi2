@@ -1,0 +1,86 @@
+name: Smart Contract CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    name: Foundry Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # ─── 1. Checkout code ─────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ─── 2. Install Foundry ───────────────────────────────────
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      # ─── 3. Install dependencies ──────────────────────────────
+      - name: Install dependencies
+        run: forge install
+
+      # ─── 4. Compile contracts ─────────────────────────────────
+      - name: Compile contracts
+        run: forge build --sizes
+
+      # ─── 5. Run all tests ─────────────────────────────────────
+      - name: Run tests
+        run: forge test -vv
+
+      # ─── 6. Gas report ────────────────────────────────────────
+      - name: Gas report
+        run: forge test --gas-report
+
+      # ─── 7. Coverage report ───────────────────────────────────
+      - name: Coverage report
+        run: forge coverage
+
+  slither:
+    name: Slither Analysis
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      # ─── 1. Checkout code ─────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ─── 2. Install Foundry ───────────────────────────────────
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      # ─── 3. Install Python ────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # ─── 4. Install Slither ───────────────────────────────────
+      - name: Install Slither
+        run: pip install slither-analyzer
+
+      # ─── 5. Run Slither ───────────────────────────────────────
+      - name: Run Slither analysis
+        run: |
+          slither . --checklist --markdown-root ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}/ || true
+
+      # ─── 6. Save Slither report ───────────────────────────────
+      - name: Upload Slither report
+        uses: actions/upload-artifact@v4
+        with:
+          name: slither-report
+          path: slither-report.md
+          if-no-files-found: ignore
