@@ -84,3 +84,8 @@ jobs:
           name: slither-report
           path: slither-report.md
           if-no-files-found: ignore
+      
+      - name: Run Forge tests
+        run: forge test -vv
+        env:
+          MAINNET_RPC_URL: ${{ secrets.MAINNET_RPC_URL }}
