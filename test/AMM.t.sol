@@ -7,25 +7,25 @@ import "../src/Token.sol";
 import "../src/LPToken.sol";
 
 contract AMMTest is Test {
-    AMM   amm;
+    AMM amm;
     Token tokenA;
     Token tokenB;
 
     address alice = makeAddr("alice");
-    address bob   = makeAddr("bob");
+    address bob = makeAddr("bob");
 
     uint256 constant INITIAL = 1_000_000e18;
 
     function setUp() public {
         tokenA = new Token("Token A", "TKA", INITIAL * 10);
         tokenB = new Token("Token B", "TKB", INITIAL * 10);
-        amm    = new AMM(address(tokenA), address(tokenB));
+        amm = new AMM(address(tokenA), address(tokenB));
 
         // Раздаём токены
         tokenA.mint(alice, INITIAL);
         tokenB.mint(alice, INITIAL);
-        tokenA.mint(bob,   INITIAL);
-        tokenB.mint(bob,   INITIAL);
+        tokenA.mint(bob, INITIAL);
+        tokenB.mint(bob, INITIAL);
 
         // Апрувы
         vm.startPrank(alice);
@@ -208,7 +208,7 @@ contract AMMTest is Test {
         amm.addLiquidity(1000e18, 1000e18);
 
         // Свопаем 50% резерва — большой price impact
-        uint256 amountIn  = 500e18;
+        uint256 amountIn = 500e18;
         uint256 amountOut = amm.getAmountOut(amountIn, 1000e18, 1000e18);
 
         // Получаем значительно меньше из-за проскальзывания
@@ -232,7 +232,7 @@ contract AMMTest is Test {
         vm.prank(alice);
         amm.addLiquidity(1000e18, 1000e18);
 
-        for (uint i = 0; i < 5; i++) {
+        for (uint256 i = 0; i < 5; i++) {
             vm.prank(bob);
             amm.swap(address(tokenA), 1e18, 0);
         }

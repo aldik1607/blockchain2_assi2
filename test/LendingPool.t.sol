@@ -7,20 +7,20 @@ import "../src/Token.sol";
 
 contract LendingPoolTest is Test {
     LendingPool pool;
-    Token       token;
+    Token token;
 
-    address alice     = makeAddr("alice");
-    address bob       = makeAddr("bob");
+    address alice = makeAddr("alice");
+    address bob = makeAddr("bob");
     address liquidator = makeAddr("liquidator");
 
     uint256 constant INITIAL = 100_000e18;
 
     function setUp() public {
         token = new Token("USD Coin", "USDC", INITIAL * 10);
-        pool  = new LendingPool(address(token));
+        pool = new LendingPool(address(token));
 
-        token.mint(alice,     INITIAL);
-        token.mint(bob,       INITIAL);
+        token.mint(alice, INITIAL);
+        token.mint(bob, INITIAL);
         token.mint(liquidator, INITIAL);
 
         // Seed pool with liquidity
@@ -253,7 +253,7 @@ contract LendingPoolTest is Test {
 
     function testFuzz_Borrow_NeverExceedsLTV(uint256 depositAmount, uint256 borrowAmount) public {
         depositAmount = bound(depositAmount, 1e18, 10_000e18);
-        borrowAmount  = bound(borrowAmount, 1, (depositAmount * 75) / 100);
+        borrowAmount = bound(borrowAmount, 1, (depositAmount * 75) / 100);
 
         token.mint(alice, depositAmount);
 

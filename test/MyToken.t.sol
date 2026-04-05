@@ -8,7 +8,7 @@ contract MyTokenTest is Test {
     MyToken token;
     address owner = address(1);
     address alice = address(2);
-    address bob   = address(3);
+    address bob = address(3);
 
     uint256 constant INITIAL_SUPPLY = 1_000_000e18;
 
@@ -138,8 +138,7 @@ contract MyTokenTest is Test {
         vm.prank(spender);
         token.transferFrom(owner, to, amount);
 
-        assertEq(token.balanceOf(to == owner ? owner : to),
-                 to == owner ? INITIAL_SUPPLY : amount);
+        assertEq(token.balanceOf(to == owner ? owner : to), to == owner ? INITIAL_SUPPLY : amount);
     }
 
     // Fuzz: mint на произвольный адрес и сумму
@@ -154,11 +153,11 @@ contract MyTokenTest is Test {
     }
 
     function test_Burn() public {
-    token.mint(alice, 500e18);
-    token.burn(alice, 200e18);
-    assertEq(token.balanceOf(alice), 300e18);
-    assertEq(token.totalSupply(), INITIAL_SUPPLY + 300e18);
-}
+        token.mint(alice, 500e18);
+        token.burn(alice, 200e18);
+        assertEq(token.balanceOf(alice), 300e18);
+        assertEq(token.totalSupply(), INITIAL_SUPPLY + 300e18);
+    }
 
     // Burn — revert при недостатке баланса
     function test_Burn_RevertInsufficientBalance() public {

@@ -15,29 +15,24 @@ interface IERC20 {
 }
 
 interface IUniswapV2Router {
-    function swapExactETHForTokens(
-        uint256 amountOutMin,
-        address[] calldata path,
-        address to,
-        uint256 deadline
-    ) external payable returns (uint256[] memory amounts);
+    function swapExactETHForTokens(uint256 amountOutMin, address[] calldata path, address to, uint256 deadline)
+        external
+        payable
+        returns (uint256[] memory amounts);
 
-    function getAmountsOut(
-        uint256 amountIn,
-        address[] calldata path
-    ) external view returns (uint256[] memory amounts);
+    function getAmountsOut(uint256 amountIn, address[] calldata path) external view returns (uint256[] memory amounts);
 
     function WETH() external pure returns (address);
 }
 
 contract ForkTest is Test {
     // ─── Адреса mainnet контрактов ────────────────────────────
-    address constant USDC         = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
-    address constant UNISWAP_V2   = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
-    address constant WETH         = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-    address constant DAI          = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
+    address constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
+    address constant UNISWAP_V2 = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
+    address constant WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    address constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
 
-    IERC20           usdc;
+    IERC20 usdc;
     IUniswapV2Router router;
 
     uint256 forkId;
@@ -46,7 +41,7 @@ contract ForkTest is Test {
         // Создаём форк mainnet
         forkId = vm.createSelectFork(vm.envString("MAINNET_RPC_URL"));
 
-        usdc   = IERC20(USDC);
+        usdc = IERC20(USDC);
         router = IUniswapV2Router(UNISWAP_V2);
     }
 
@@ -103,7 +98,7 @@ contract ForkTest is Test {
 
         vm.prank(trader);
         uint256[] memory amounts = router.swapExactETHForTokens{value: 1 ether}(
-            0,                          // amountOutMin = 0 (для теста)
+            0, // amountOutMin = 0 (для теста)
             path,
             trader,
             block.timestamp + 300
@@ -125,12 +120,7 @@ contract ForkTest is Test {
         path[1] = DAI;
 
         vm.prank(trader);
-        uint256[] memory amounts = router.swapExactETHForTokens{value: 1 ether}(
-            0,
-            path,
-            trader,
-            block.timestamp + 300
-        );
+        uint256[] memory amounts = router.swapExactETHForTokens{value: 1 ether}(0, path, trader, block.timestamp + 300);
 
         console.log("Swapped 1 ETH for", amounts[1] / 1e18, "DAI");
         assertGt(amounts[1], 100 * 1e18); // DAI > $100

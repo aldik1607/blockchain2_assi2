@@ -16,14 +16,14 @@ contract Handler is Test {
         actors.push(address(3));
 
         // Дать каждому актору начальный баланс
-        for (uint i = 0; i < actors.length; i++) {
+        for (uint256 i = 0; i < actors.length; i++) {
             token.mint(actors[i], 1000e18);
         }
     }
 
     function transfer(uint256 actorSeed, uint256 toSeed, uint256 amount) public {
         address from = actors[actorSeed % actors.length];
-        address to   = actors[toSeed   % actors.length];
+        address to = actors[toSeed % actors.length];
         amount = bound(amount, 0, token.balanceOf(from));
 
         vm.prank(from);
@@ -31,7 +31,7 @@ contract Handler is Test {
     }
 
     function approve(uint256 actorSeed, uint256 spenderSeed, uint256 amount) public {
-        address actor   = actors[actorSeed  % actors.length];
+        address actor = actors[actorSeed % actors.length];
         address spender = actors[spenderSeed % actors.length];
         amount = bound(amount, 0, 1000e18);
 
@@ -41,13 +41,13 @@ contract Handler is Test {
 }
 
 contract MyTokenInvariantTest is Test {
-    MyToken  token;
-    Handler  handler;
+    MyToken token;
+    Handler handler;
 
     address[] actors;
 
     function setUp() public {
-        token   = new MyToken("MyToken", "MTK", 0);
+        token = new MyToken("MyToken", "MTK", 0);
         handler = new Handler(token);
 
         actors.push(address(1));
@@ -61,7 +61,7 @@ contract MyTokenInvariantTest is Test {
     // Инвариант 1: сумма балансов == totalSupply
     function invariant_TotalSupplyEqualsSumOfBalances() public view {
         uint256 sum = 0;
-        for (uint i = 0; i < actors.length; i++) {
+        for (uint256 i = 0; i < actors.length; i++) {
             sum += token.balanceOf(actors[i]);
         }
         assertEq(sum, token.totalSupply());
@@ -69,7 +69,7 @@ contract MyTokenInvariantTest is Test {
 
     // Инвариант 2: ни у кого нет больше totalSupply
     function invariant_NoAddressExceedsTotalSupply() public view {
-        for (uint i = 0; i < actors.length; i++) {
+        for (uint256 i = 0; i < actors.length; i++) {
             assertLe(token.balanceOf(actors[i]), token.totalSupply());
         }
     }
