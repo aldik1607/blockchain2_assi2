@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 import "forge-std/Test.sol";
 import "../src/MyToken.sol";
 
-// Handler — посредник, через который Foundry вызывает функции
+
 contract Handler is Test {
     MyToken public token;
     address[] public actors;
@@ -15,7 +15,6 @@ contract Handler is Test {
         actors.push(address(2));
         actors.push(address(3));
 
-        // Дать каждому актору начальный баланс
         for (uint256 i = 0; i < actors.length; i++) {
             token.mint(actors[i], 1000e18);
         }
@@ -54,11 +53,9 @@ contract MyTokenInvariantTest is Test {
         actors.push(address(2));
         actors.push(address(3));
 
-        // Foundry будет вызывать только функции Handler
         targetContract(address(handler));
     }
 
-    // Инвариант 1: сумма балансов == totalSupply
     function invariant_TotalSupplyEqualsSumOfBalances() public view {
         uint256 sum = 0;
         for (uint256 i = 0; i < actors.length; i++) {
@@ -67,7 +64,6 @@ contract MyTokenInvariantTest is Test {
         assertEq(sum, token.totalSupply());
     }
 
-    // Инвариант 2: ни у кого нет больше totalSupply
     function invariant_NoAddressExceedsTotalSupply() public view {
         for (uint256 i = 0; i < actors.length; i++) {
             assertLe(token.balanceOf(actors[i]), token.totalSupply());

@@ -30,7 +30,6 @@ contract AMM {
         lpToken = new LPToken(address(this));
     }
 
-    // ─── getAmountOut: constant product formula with 0.3% fee ───
 
     function getAmountOut(uint256 amountIn, uint256 reserveIn, uint256 reserveOut) public pure returns (uint256) {
         require(amountIn > 0, "Amount must be > 0");
@@ -42,7 +41,6 @@ contract AMM {
         return numerator / denominator;
     }
 
-    // ─── addLiquidity ────────────────────────────────────────────
 
     function addLiquidity(uint256 amountA, uint256 amountB) external returns (uint256 lpMinted) {
         require(amountA > 0 && amountB > 0, "Amounts must be > 0");
@@ -50,10 +48,8 @@ contract AMM {
         uint256 totalLP = lpToken.totalSupply();
 
         if (totalLP == 0) {
-            // Первый провайдер — geometric mean
             lpMinted = _sqrt(amountA * amountB);
         } else {
-            // Последующие — пропорционально
             uint256 lpFromA = (amountA * totalLP) / reserveA;
             uint256 lpFromB = (amountB * totalLP) / reserveB;
             lpMinted = lpFromA < lpFromB ? lpFromA : lpFromB;
@@ -72,7 +68,6 @@ contract AMM {
         emit LiquidityAdded(msg.sender, amountA, amountB, lpMinted);
     }
 
-    // ─── removeLiquidity ─────────────────────────────────────────
 
     function removeLiquidity(uint256 lpAmount) external returns (uint256 amountA, uint256 amountB) {
         require(lpAmount > 0, "LP amount must be > 0");
@@ -96,7 +91,6 @@ contract AMM {
         emit LiquidityRemoved(msg.sender, amountA, amountB, lpAmount);
     }
 
-    // ─── swap ────────────────────────────────────────────────────
 
     function swap(address tokenIn, uint256 amountIn, uint256 minAmountOut) external returns (uint256 amountOut) {
         require(tokenIn == address(tokenA) || tokenIn == address(tokenB), "Invalid token");
@@ -125,7 +119,6 @@ contract AMM {
         emit Swap(msg.sender, tokenIn, amountIn, amountOut);
     }
 
-    // ─── helpers ─────────────────────────────────────────────────
 
     function getReserves() external view returns (uint256, uint256) {
         return (reserveA, reserveB);
